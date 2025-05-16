@@ -4,6 +4,8 @@ package mcp
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"maps"
 
 	"github.com/yosida95/uritemplate/v3"
@@ -222,7 +224,75 @@ type Result struct {
 
 // RequestId is a uniquely identifying ID for a request in JSON-RPC.
 // It can be any JSON-serializable value, typically a number or string.
-type RequestId any
+type RequestId struct {
+	value any
+}
+
+// NewRequestId creates a new RequestId with the given value
+func NewRequestId(value any) RequestId {
+	return RequestId{value: value}
+}
+
+// Value returns the underlying value of the RequestId
+func (r RequestId) Value() any {
+	return r.value
+}
+
+// String returns a string representation of the RequestId
+func (r RequestId) String() string {
+	switch v := r.value.(type) {
+	case string:
+		return "string:" + v
+	case int64:
+		return "int64:" + strconv.FormatInt(v, 10)
+	case float64:
+		if v == float64(int64(v)) {
+			return "int64:" + strconv.FormatInt(int64(v), 10)
+		}
+		return "float64:" + strconv.FormatFloat(v, 'f', -1, 64)
+	case nil:
+		return "<nil>"
+	default:
+		return "unknown:" + fmt.Sprintf("%v", v)
+	}
+}
+
+// IsNil returns true if the RequestId is nil
+func (r RequestId) IsNil() bool {
+	return r.value == nil
+}
+
+func (r RequestId) MarshalJSON() ([]byte, error) {
+	return json.Marshal(r.value)
+}
+
+func (r *RequestId) UnmarshalJSON(data []byte) error {
+
+	if string(data) == "null" {
+		r.value = nil
+		return nil
+	}
+
+	// Try unmarshaling as string first
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		r.value = s
+		return nil
+	}
+
+	// JSON numbers are unmarshaled as float64 in Go
+	var f float64
+	if err := json.Unmarshal(data, &f); err == nil {
+		if f == float64(int64(f)) {
+			r.value = int64(f)
+		} else {
+			r.value = f
+		}
+		return nil
+	}
+
+	return fmt.Errorf("invalid request id: %s", string(data))
+}
 
 // JSONRPCRequest represents a request that expects a response.
 type JSONRPCRequest struct {
