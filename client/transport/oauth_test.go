@@ -172,11 +172,11 @@ func TestOAuthHandler_GetAuthorizationHeader_EmptyAccessToken(t *testing.T) {
 
 	// Create an OAuth handler
 	config := OAuthConfig{
-		ClientID:     "test-client",
-		RedirectURI:  "http://localhost:8085/callback",
-		Scopes:       []string{"mcp.read", "mcp.write"},
-		TokenStore:   tokenStore,
-		PKCEEnabled:  true,
+		ClientID:    "test-client",
+		RedirectURI: "http://localhost:8085/callback",
+		Scopes:      []string{"mcp.read", "mcp.write"},
+		TokenStore:  tokenStore,
+		PKCEEnabled: true,
 	}
 
 	handler := NewOAuthHandler(config)
@@ -214,8 +214,8 @@ func TestOAuthHandler_GetServerMetadata_EmptyURL(t *testing.T) {
 
 	// Verify the error message contains something about a connection error
 	// since we're now trying to connect to the well-known endpoint
-	if !strings.Contains(err.Error(), "connection refused") && 
-	   !strings.Contains(err.Error(), "failed to send protected resource request") {
+	if !strings.Contains(err.Error(), "connection refused") &&
+		!strings.Contains(err.Error(), "failed to send protected resource request") {
 		t.Errorf("Expected error message to contain connection error, got %s", err.Error())
 	}
 }
@@ -251,7 +251,7 @@ func TestOAuthError(t *testing.T) {
 				ErrorDescription: tc.description,
 				ErrorURI:         tc.uri,
 			}
-			
+
 			if oauthErr.Error() != tc.expected {
 				t.Errorf("Expected error message %q, got %q", tc.expected, oauthErr.Error())
 			}
@@ -271,25 +271,25 @@ func TestOAuthHandler_ProcessAuthorizationResponse_StateValidation(t *testing.T)
 	}
 
 	handler := NewOAuthHandler(config)
-	
+
 	// Mock the server metadata to avoid nil pointer dereference
 	handler.serverMetadata = &AuthServerMetadata{
 		Issuer:                "http://example.com",
 		AuthorizationEndpoint: "http://example.com/authorize",
 		TokenEndpoint:         "http://example.com/token",
 	}
-	
+
 	// Set the expected state
 	expectedState := "test-state-123"
 	handler.expectedState = expectedState
-	
+
 	// Test with non-matching state - this should fail immediately with ErrInvalidState
 	// before trying to connect to any server
 	err := handler.ProcessAuthorizationResponse(context.Background(), "test-code", "wrong-state", "test-code-verifier")
 	if !errors.Is(err, ErrInvalidState) {
 		t.Errorf("Expected ErrInvalidState, got %v", err)
 	}
-	
+
 	// Test with empty expected state
 	handler.expectedState = ""
 	err = handler.ProcessAuthorizationResponse(context.Background(), "test-code", expectedState, "test-code-verifier")

@@ -50,7 +50,7 @@ func main() {
 	// Try to initialize the client
 	result, err := c.Initialize(context.Background(), mcp.InitializeRequest{
 		Params: struct {
-			ProtocolVersion string             `json:"protocolVersion"`
+			ProtocolVersion string                 `json:"protocolVersion"`
 			Capabilities    mcp.ClientCapabilities `json:"capabilities"`
 			ClientInfo      mcp.Implementation     `json:"clientInfo"`
 		}{
@@ -65,65 +65,65 @@ func main() {
 	// Check if we need OAuth authorization
 	if client.IsOAuthAuthorizationRequiredError(err) {
 		fmt.Println("OAuth authorization required. Starting authorization flow...")
-		
+
 		// Get the OAuth handler from the error
 		oauthHandler := client.GetOAuthHandler(err)
-		
+
 		// Start a local server to handle the OAuth callback
 		callbackChan := make(chan map[string]string)
 		server := startCallbackServer(callbackChan)
 		defer server.Close()
-		
+
 		// Generate PKCE code verifier and challenge
 		codeVerifier, err := client.GenerateCodeVerifier()
 		if err != nil {
 			log.Fatalf("Failed to generate code verifier: %v", err)
 		}
 		codeChallenge := client.GenerateCodeChallenge(codeVerifier)
-		
+
 		// Generate state parameter
 		state, err := client.GenerateState()
 		if err != nil {
 			log.Fatalf("Failed to generate state: %v", err)
 		}
-		
+
 		// Get the authorization URL
 		authURL, err := oauthHandler.GetAuthorizationURL(context.Background(), state, codeChallenge)
 		if err != nil {
 			log.Fatalf("Failed to get authorization URL: %v", err)
 		}
-		
+
 		// Open the browser to the authorization URL
 		fmt.Printf("Opening browser to: %s\n", authURL)
 		openBrowser(authURL)
-		
+
 		// Wait for the callback
 		fmt.Println("Waiting for authorization callback...")
 		params := <-callbackChan
-		
+
 		// Verify state parameter
 		if params["state"] != state {
 			log.Fatalf("State mismatch: expected %s, got %s", state, params["state"])
 		}
-		
+
 		// Exchange the authorization code for a token
 		code := params["code"]
 		if code == "" {
 			log.Fatalf("No authorization code received")
 		}
-		
+
 		fmt.Println("Exchanging authorization code for token...")
 		err = oauthHandler.ProcessAuthorizationResponse(context.Background(), code, state, codeVerifier)
 		if err != nil {
 			log.Fatalf("Failed to process authorization response: %v", err)
 		}
-		
+
 		fmt.Println("Authorization successful!")
-		
+
 		// Try to initialize again with the token
 		result, err = c.Initialize(context.Background(), mcp.InitializeRequest{
 			Params: struct {
-				ProtocolVersion string             `json:"protocolVersion"`
+				ProtocolVersion string                 `json:"protocolVersion"`
 				Capabilities    mcp.ClientCapabilities `json:"capabilities"`
 				ClientInfo      mcp.Implementation     `json:"clientInfo"`
 			}{
@@ -141,8 +141,8 @@ func main() {
 		log.Fatalf("Failed to initialize client: %v", err)
 	}
 
-	fmt.Printf("Client initialized successfully! Server: %s %s\n", 
-		result.ServerInfo.Name, 
+	fmt.Printf("Client initialized successfully! Server: %s %s\n",
+		result.ServerInfo.Name,
 		result.ServerInfo.Version)
 
 	// Now you can use the client as usual

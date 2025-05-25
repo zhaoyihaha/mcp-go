@@ -57,11 +57,11 @@ func TestNewOAuthStreamableHttpClient(t *testing.T) {
 
 	// Create OAuth config
 	oauthConfig := OAuthConfig{
-		ClientID:     "test-client",
-		RedirectURI:  "http://localhost:8085/callback",
-		Scopes:       []string{"mcp.read", "mcp.write"},
-		TokenStore:   tokenStore,
-		PKCEEnabled:  true,
+		ClientID:    "test-client",
+		RedirectURI: "http://localhost:8085/callback",
+		Scopes:      []string{"mcp.read", "mcp.write"},
+		TokenStore:  tokenStore,
+		PKCEEnabled: true,
 	}
 
 	// Create client with OAuth

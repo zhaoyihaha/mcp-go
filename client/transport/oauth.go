@@ -123,7 +123,7 @@ func NewOAuthHandler(config OAuthConfig) *OAuthHandler {
 	if config.TokenStore == nil {
 		config.TokenStore = NewMemoryTokenStore()
 	}
-	
+
 	return &OAuthHandler{
 		config:     config,
 		httpClient: &http.Client{Timeout: 30 * time.Second},
@@ -239,7 +239,7 @@ func extractOAuthError(body []byte, statusCode int, context string) error {
 	if err := json.Unmarshal(body, &oauthErr); err == nil && oauthErr.ErrorCode != "" {
 		return fmt.Errorf("%s: %w", context, oauthErr)
 	}
-	
+
 	// If not a valid OAuth error, return the raw response
 	return fmt.Errorf("%s with status %d: %s", context, statusCode, body)
 }
@@ -447,7 +447,7 @@ func (h *OAuthHandler) getDefaultEndpoints(baseURL string) (*AuthServerMetadata,
 	// Discard any path component to get the authorization base URL
 	parsedURL.Path = ""
 	authBaseURL := parsedURL.String()
-	
+
 	// Validate that the URL has a scheme and host
 	if parsedURL.Scheme == "" || parsedURL.Host == "" {
 		return nil, fmt.Errorf("invalid base URL: missing scheme or host in %q", baseURL)
@@ -543,16 +543,16 @@ func (h *OAuthHandler) ProcessAuthorizationResponse(ctx context.Context, code, s
 	if h.expectedState == "" {
 		return errors.New("no expected state found, authorization flow may not have been initiated properly")
 	}
-	
+
 	if state != h.expectedState {
 		return ErrInvalidState
 	}
-	
+
 	// Clear the expected state after validation
 	defer func() {
 		h.expectedState = ""
 	}()
-	
+
 	metadata, err := h.getServerMetadata(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get server metadata: %w", err)
@@ -629,7 +629,7 @@ func (h *OAuthHandler) GetAuthorizationURL(ctx context.Context, state, codeChall
 	params.Set("client_id", h.config.ClientID)
 	params.Set("redirect_uri", h.config.RedirectURI)
 	params.Set("state", state)
-	
+
 	if len(h.config.Scopes) > 0 {
 		params.Set("scope", strings.Join(h.config.Scopes, " "))
 	}

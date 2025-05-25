@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
-	
+
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -65,11 +65,11 @@ func TestStreamableHTTP_WithOAuth(t *testing.T) {
 
 	// Create OAuth config
 	oauthConfig := OAuthConfig{
-		ClientID:     "test-client",
-		RedirectURI:  "http://localhost:8085/callback",
-		Scopes:       []string{"mcp.read", "mcp.write"},
-		TokenStore:   tokenStore,
-		PKCEEnabled:  true,
+		ClientID:    "test-client",
+		RedirectURI: "http://localhost:8085/callback",
+		Scopes:      []string{"mcp.read", "mcp.write"},
+		TokenStore:  tokenStore,
+		PKCEEnabled: true,
 	}
 
 	// Create StreamableHTTP with OAuth
@@ -82,7 +82,7 @@ func TestStreamableHTTP_WithOAuth(t *testing.T) {
 	if !transport.IsOAuthEnabled() {
 		t.Errorf("Expected IsOAuthEnabled() to return true")
 	}
-	
+
 	// Verify the OAuth handler is set
 	if transport.GetOAuthHandler() == nil {
 		t.Errorf("Expected GetOAuthHandler() to return a handler")
@@ -94,48 +94,48 @@ func TestStreamableHTTP_WithOAuth(t *testing.T) {
 		ID:      mcp.NewRequestId(1),
 		Method:  "test",
 	})
-	
+
 	// Verify the error is an OAuthAuthorizationRequiredError
 	if err == nil {
 		t.Fatalf("Expected error on first request, got nil")
 	}
-	
+
 	var oauthErr *OAuthAuthorizationRequiredError
 	if !errors.As(err, &oauthErr) {
 		t.Fatalf("Expected OAuthAuthorizationRequiredError, got %T: %v", err, err)
 	}
-	
+
 	// Verify the error has the handler
 	if oauthErr.Handler == nil {
 		t.Errorf("Expected OAuthAuthorizationRequiredError to have a handler")
 	}
-	
+
 	// Verify the server received the first request
 	if requestCount != 1 {
 		t.Errorf("Expected server to receive 1 request, got %d", requestCount)
 	}
-	
+
 	// Second request should succeed
 	response, err := transport.SendRequest(context.Background(), JSONRPCRequest{
 		JSONRPC: "2.0",
 		ID:      mcp.NewRequestId(2),
 		Method:  "test",
 	})
-	
+
 	if err != nil {
 		t.Fatalf("Failed to send second request: %v", err)
 	}
-	
+
 	// Verify the response
 	var resultStr string
 	if err := json.Unmarshal(response.Result, &resultStr); err != nil {
 		t.Fatalf("Failed to unmarshal result: %v", err)
 	}
-	
+
 	if resultStr != "success" {
 		t.Errorf("Expected result to be 'success', got %v", resultStr)
 	}
-	
+
 	// Verify the server received the Authorization header
 	if authHeaderReceived != "Bearer test-token" {
 		t.Errorf("Expected server to receive Authorization header 'Bearer test-token', got '%s'", authHeaderReceived)
@@ -155,11 +155,11 @@ func TestStreamableHTTP_WithOAuth_Unauthorized(t *testing.T) {
 
 	// Create OAuth config
 	oauthConfig := OAuthConfig{
-		ClientID:     "test-client",
-		RedirectURI:  "http://localhost:8085/callback",
-		Scopes:       []string{"mcp.read", "mcp.write"},
-		TokenStore:   tokenStore,
-		PKCEEnabled:  true,
+		ClientID:    "test-client",
+		RedirectURI: "http://localhost:8085/callback",
+		Scopes:      []string{"mcp.read", "mcp.write"},
+		TokenStore:  tokenStore,
+		PKCEEnabled: true,
 	}
 
 	// Create StreamableHTTP with OAuth

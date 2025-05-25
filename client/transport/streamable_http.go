@@ -74,7 +74,7 @@ type StreamableHTTP struct {
 	notifyMu            sync.RWMutex
 
 	closed chan struct{}
-	
+
 	// OAuth support
 	oauthHandler *OAuthHandler
 }
@@ -213,7 +213,7 @@ func (c *StreamableHTTP) SendRequest(
 	for k, v := range c.headers {
 		req.Header.Set(k, v)
 	}
-  
+
 	// Add OAuth authorization if configured
 	if c.oauthHandler != nil {
 		authHeader, err := c.oauthHandler.GetAuthorizationHeader(ctx)
@@ -227,8 +227,8 @@ func (c *StreamableHTTP) SendRequest(
 			return nil, fmt.Errorf("failed to get authorization header: %w", err)
 		}
 		req.Header.Set("Authorization", authHeader)
-  }
-  
+	}
+
 	if c.headerFunc != nil {
 		for k, v := range c.headerFunc(ctx) {
 			req.Header.Set(k, v)
@@ -249,7 +249,7 @@ func (c *StreamableHTTP) SendRequest(
 			c.sessionID.CompareAndSwap(sessionID, "")
 			return nil, fmt.Errorf("session terminated (404). need to re-initialize")
 		}
-		
+
 		// Handle OAuth unauthorized error
 		if resp.StatusCode == http.StatusUnauthorized && c.oauthHandler != nil {
 			return nil, &OAuthAuthorizationRequiredError{
@@ -431,7 +431,7 @@ func (c *StreamableHTTP) SendNotification(ctx context.Context, notification mcp.
 	for k, v := range c.headers {
 		req.Header.Set(k, v)
 	}
-	
+
 	// Add OAuth authorization if configured
 	if c.oauthHandler != nil {
 		authHeader, err := c.oauthHandler.GetAuthorizationHeader(ctx)
@@ -445,8 +445,8 @@ func (c *StreamableHTTP) SendNotification(ctx context.Context, notification mcp.
 			return fmt.Errorf("failed to get authorization header: %w", err)
 		}
 		req.Header.Set("Authorization", authHeader)
-  }
-   
+	}
+
 	if c.headerFunc != nil {
 		for k, v := range c.headerFunc(ctx) {
 			req.Header.Set(k, v)
@@ -467,7 +467,7 @@ func (c *StreamableHTTP) SendNotification(ctx context.Context, notification mcp.
 				Handler: c.oauthHandler,
 			}
 		}
-		
+
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf(
 			"notification failed with status %d: %s",

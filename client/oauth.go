@@ -27,7 +27,7 @@ var NewMemoryTokenStore = transport.NewMemoryTokenStore
 func NewOAuthStreamableHttpClient(baseURL string, oauthConfig OAuthConfig, options ...transport.StreamableHTTPCOption) (*Client, error) {
 	// Add OAuth option to the list of options
 	options = append(options, transport.WithOAuth(oauthConfig))
-	
+
 	trans, err := transport.NewStreamableHTTP(baseURL, options...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create HTTP transport: %w", err)
@@ -49,8 +49,8 @@ type OAuthAuthorizationRequiredError = transport.OAuthAuthorizationRequiredError
 
 // IsOAuthAuthorizationRequiredError checks if an error is an OAuthAuthorizationRequiredError
 func IsOAuthAuthorizationRequiredError(err error) bool {
-    var target *OAuthAuthorizationRequiredError
-    return errors.As(err, &target)
+	var target *OAuthAuthorizationRequiredError
+	return errors.As(err, &target)
 }
 
 // GetOAuthHandler extracts the OAuthHandler from an OAuthAuthorizationRequiredError
