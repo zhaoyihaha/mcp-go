@@ -392,10 +392,10 @@ type CancelledNotificationParams struct {
 // connects, asking it to begin initialization.
 type InitializeRequest struct {
 	Request
-	Params InitializeRequestParams `json:"params"`
+	Params InitializeParams `json:"params"`
 }
 
-type InitializeRequestParams struct {
+type InitializeParams struct {
 	// The latest version of the Model Context Protocol that the client supports.
 	// The client MAY decide to support older versions as well.
 	ProtocolVersion string             `json:"protocolVersion"`
@@ -512,10 +512,10 @@ type ProgressNotificationParams struct {
 
 type PaginatedRequest struct {
 	Request
-	Params PaginatedRequestParams `json:"params,omitempty"`
+	Params PaginatedParams `json:"params,omitempty"`
 }
 
-type PaginatedRequestParams struct {
+type PaginatedParams struct {
 	// An opaque token representing the current pagination position.
 	// If provided, the server should return results starting after this cursor.
 	Cursor Cursor `json:"cursor,omitempty"`
@@ -561,10 +561,10 @@ type ListResourceTemplatesResult struct {
 // specific resource URI.
 type ReadResourceRequest struct {
 	Request
-	Params ReadResourceRequestParams `json:"params"`
+	Params ReadResourceParams `json:"params"`
 }
 
-type ReadResourceRequestParams struct {
+type ReadResourceParams struct {
 	// The URI of the resource to read. The URI can use any protocol; it is up
 	// to the server how to interpret it.
 	URI string `json:"uri"`
@@ -591,10 +591,10 @@ type ResourceListChangedNotification struct {
 // notifications from the server whenever a particular resource changes.
 type SubscribeRequest struct {
 	Request
-	Params SubscribeRequestParams `json:"params"`
+	Params SubscribeParams `json:"params"`
 }
 
-type SubscribeRequestParams struct {
+type SubscribeParams struct {
 	// The URI of the resource to subscribe to. The URI can use any protocol; it
 	// is up to the server how to interpret it.
 	URI string `json:"uri"`
@@ -605,10 +605,10 @@ type SubscribeRequestParams struct {
 // resources/subscribe request.
 type UnsubscribeRequest struct {
 	Request
-	Params UnsubscribeRequestParams `json:"params"`
+	Params UnsubscribeParams `json:"params"`
 }
 
-type UnsubscribeRequestParams struct {
+type UnsubscribeParams struct {
 	// The URI of the resource to unsubscribe from.
 	URI string `json:"uri"`
 }
@@ -710,10 +710,10 @@ func (BlobResourceContents) isResourceContents() {}
 // adjust logging.
 type SetLevelRequest struct {
 	Request
-	Params SetLevelRequestParams `json:"params"`
+	Params SetLevelParams `json:"params"`
 }
 
-type SetLevelRequestParams struct {
+type SetLevelParams struct {
 	// The level of logging that the client wants to receive from the server.
 	// The server should send all logs at this level and higher (i.e., more severe) to
 	// the client as notifications/logging/message.
@@ -763,10 +763,10 @@ const (
 // the request (human in the loop) and decide whether to approve it.
 type CreateMessageRequest struct {
 	Request
-	CreateMessageRequestParams `json:"params"`
+	CreateMessageParams `json:"params"`
 }
 
-type CreateMessageRequestParams struct {
+type CreateMessageParams struct {
 	Messages         []SamplingMessage `json:"messages"`
 	ModelPreferences *ModelPreferences `json:"modelPreferences,omitempty"`
 	SystemPrompt     string            `json:"systemPrompt,omitempty"`
@@ -932,10 +932,10 @@ type ModelHint struct {
 // CompleteRequest is a request from the client to the server, to ask for completion options.
 type CompleteRequest struct {
 	Request
-	Params CompleteRequestParams `json:"params"`
+	Params CompleteParams `json:"params"`
 }
 
-type CompleteRequestParams struct {
+type CompleteParams struct {
 	Ref      any `json:"ref"` // Can be PromptReference or ResourceReference
 	Argument struct {
 		// The name of the argument

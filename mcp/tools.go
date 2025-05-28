@@ -45,10 +45,10 @@ type CallToolResult struct {
 // CallToolRequest is used by the client to invoke a tool provided by the server.
 type CallToolRequest struct {
 	Request
-	Params CallToolRequestParams `json:"params"`
+	Params CallToolParams `json:"params"`
 }
 
-type CallToolRequestParams struct {
+type CallToolParams struct {
 	Name      string `json:"name"`
 	Arguments any    `json:"arguments,omitempty"`
 	Meta      *Meta  `json:"_meta,omitempty"`
