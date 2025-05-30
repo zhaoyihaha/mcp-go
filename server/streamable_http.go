@@ -74,6 +74,15 @@ func WithHTTPContextFunc(fn HTTPContextFunc) StreamableHTTPOption {
 	}
 }
 
+// WithStreamableHTTPServer sets the HTTP server instance for StreamableHTTPServer.
+// NOTE: When providing a custom HTTP server, you must handle routing yourself
+// If routing is not set up, the server will start but won't handle any MCP requests.
+func WithStreamableHTTPServer(srv *http.Server) StreamableHTTPOption {
+	return func(s *StreamableHTTPServer) {
+		s.httpServer = srv
+	}
+}
+
 // WithLogger sets the logger for the server
 func WithLogger(logger util.Logger) StreamableHTTPOption {
 	return func(s *StreamableHTTPServer) {
@@ -156,15 +165,24 @@ func (s *StreamableHTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 //	s.Start(":8080")
 func (s *StreamableHTTPServer) Start(addr string) error {
 	s.mu.Lock()
-	mux := http.NewServeMux()
-	mux.Handle(s.endpointPath, s)
-	s.httpServer = &http.Server{
-		Addr:    addr,
-		Handler: mux,
+	if s.httpServer == nil {
+		mux := http.NewServeMux()
+		mux.Handle(s.endpointPath, s)
+		s.httpServer = &http.Server{
+			Addr:    addr,
+			Handler: mux,
+		}
+	} else {
+		if s.httpServer.Addr == "" {
+			s.httpServer.Addr = addr
+		} else if s.httpServer.Addr != addr {
+			return fmt.Errorf("conflicting listen address: WithStreamableHTTPServer(%q) vs Start(%q)", s.httpServer.Addr, addr)
+		}
 	}
+	srv := s.httpServer
 	s.mu.Unlock()
 
-	return s.httpServer.ListenAndServe()
+	return srv.ListenAndServe()
 }
 
 // Shutdown gracefully stops the server, closing all active sessions
