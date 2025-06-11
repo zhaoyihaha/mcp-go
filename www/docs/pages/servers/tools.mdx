@@ -62,15 +62,15 @@ mcp.WithBoolean("enabled",
 // Array parameters
 mcp.WithArray("tags",
     mcp.Description("List of tags"),
-    mcp.Items(mcp.StringSchema()),
+    mcp.Items(map[string]any{"type": "string"}),
 )
 
 // Object parameters
 mcp.WithObject("config",
     mcp.Description("Configuration object"),
-    mcp.Properties(map[string]mcp.Schema{
-        "timeout": mcp.NumberSchema(),
-        "retries": mcp.IntegerSchema(),
+    mcp.Properties(map[string]any{
+        "timeout": map[string]any{"type": "number"},
+        "retries": map[string]any{"type": "integer"},
     }),
 )
 ```
@@ -581,7 +581,7 @@ tool := mcp.NewTool("search_database",
     ),
     mcp.WithArray("categories",
         mcp.Description("Filter by product categories"),
-        mcp.Items(mcp.StringSchema()),
+        mcp.Items(map[string]any{"type": "string"}),
     ),
 )
 

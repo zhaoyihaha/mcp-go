@@ -389,8 +389,13 @@ func validateToolArguments(tool mcp.Tool, args map[string]interface{}) error {
     return nil
 }
 
-func validateValue(value interface{}, schema mcp.Schema) error {
-    switch schema.Type {
+func validateValue(value interface{}, schema map[string]any) error {
+    schemaType, ok := schema["type"].(string)
+    if !ok {
+        return fmt.Errorf("schema missing type")
+    }
+    
+    switch schemaType {
     case "string":
         if _, ok := value.(string); !ok {
             return fmt.Errorf("expected string, got %T", value)
