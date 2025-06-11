@@ -130,7 +130,7 @@ func demonstrateClientOperations(ctx context.Context, c client.Client) error {
 client, err := client.NewStdioMCPClient("server-command", "arg1", "arg2")
 ```
 
-### HTTP Client
+### StreamableHTTP Client
 **Best for:**
 - Web applications
 - Microservice architectures
@@ -138,7 +138,7 @@ client, err := client.NewStdioMCPClient("server-command", "arg1", "arg2")
 - REST-like interactions
 
 ```go
-// Create HTTP client
+// Create StreamableHTTP client
 client := client.NewStreamableHttpClient("http://localhost:8080/mcp")
 ```
 
@@ -313,7 +313,7 @@ type LLMApplication struct {
 }
 
 func NewLLMApplication(mcpAddress string) (*LLMApplication, error) {
-    mcpClient := client.NewHTTPClient(mcpAddress)
+    mcpClient := client.NewStreamableHttpClient(mcpAddress)
     
     ctx := context.Background()
     if err := mcpClient.Initialize(ctx); err != nil {

@@ -8,7 +8,7 @@ Transport layers handle the communication between MCP clients and servers. Each 
 
 - **[STDIO](/transports/stdio)** - Standard input/output for command-line tools
 - **[SSE](/transports/sse)** - Server-Sent Events for web applications  
-- **[HTTP](/transports/http)** - Traditional HTTP for REST-like interactions
+- **[StreamableHTTP](/transports/http)** - Traditional HTTP for REST-like interactions
 - **[In-Process](/transports/inprocess)** - Direct integration for embedded scenarios
 
 ## Transport Comparison
@@ -17,7 +17,7 @@ Transport layers handle the communication between MCP clients and servers. Each 
 |-----------|----------|------|------|
 | **STDIO** | CLI tools, desktop apps | Simple, secure, no network | Single client, local only |
 | **SSE** | Web apps, real-time | Multi-client, real-time, web-friendly | HTTP overhead, one-way streaming |
-| **HTTP** | Web services, APIs | Standard protocol, caching, load balancing | No real-time, more complex |
+| **StreamableHTTP** | Web services, APIs | Standard protocol, caching, load balancing | No real-time, more complex |
 | **In-Process** | Embedded, testing | No serialization, fastest | Same process only |
 
 ## Quick Example
@@ -63,10 +63,12 @@ func main() {
     switch transport {
     case "sse":
         fmt.Printf("Starting SSE server on port %s\n", port)
-        server.ServeSSE(s, ":"+port)
-    case "http":
-        fmt.Printf("Starting HTTP server on port %s\n", port)
-        server.ServeHTTP(s, ":"+port)
+        sseServer := server.NewSSEServer(s)
+        sseServer.Start(":" + port)
+    case "streamablehttp":
+        fmt.Printf("Starting StreamableHTTP server on port %s\n", port)
+        httpServer := server.NewStreamableHTTPServer(s)
+        httpServer.Start(":" + port)
     default:
         fmt.Println("Starting STDIO server")
         server.ServeStdio(s)
@@ -110,7 +112,7 @@ func handleEcho(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResu
 - Collaborative document editing
 - Live system monitoring
 
-### HTTP Transport
+### StreamableHTTP Transport
 **Best for:**
 - Traditional web services
 - REST API integrations
@@ -144,9 +146,11 @@ func handleEcho(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResu
 func startServer(s *server.MCPServer) error {
     switch os.Getenv("MCP_TRANSPORT") {
     case "sse":
-        return server.ServeSSE(s, getPort())
-    case "http":
-        return server.ServeHTTP(s, getPort())
+        sseServer := server.NewSSEServer(s)
+        return sseServer.Start(getPort())
+    case "streamablehttp":
+        httpServer := server.NewStreamableHTTPServer(s)
+        return httpServer.Start(getPort())
     case "inprocess":
         // Note: In-process transport doesn't use network ports
         // This would typically be used differently in practice
@@ -189,16 +193,18 @@ func main() {
     
     go func() {
         log.Println("Starting SSE server on :8080...")
-        if err := server.ServeSSE(s, ":8080"); err != nil {
+        sseServer := server.NewSSEServer(s)
+        if err := sseServer.Start(":8080"); err != nil {
             log.Printf("SSE server error: %v", err)
             errChan <- fmt.Errorf("SSE server failed: %w", err)
         }
     }()
     
-    log.Println("Starting HTTP server on :8081...")
-    if err := server.ServeHTTP(s, ":8081"); err != nil {
-        log.Printf("HTTP server error: %v", err)
-        errChan <- fmt.Errorf("HTTP server failed: %w", err)
+    log.Println("Starting StreamableHTTP server on :8081...")
+    httpServer := server.NewStreamableHTTPServer(s)
+    if err := httpServer.Start(":8081"); err != nil {
+        log.Printf("StreamableHTTP server error: %v", err)
+        errChan <- fmt.Errorf("StreamableHTTP server failed: %w", err)
     }
     
     // Wait for any server to fail
@@ -260,5 +266,5 @@ Explore each transport in detail:
 
 - **[STDIO Transport](/transports/stdio)** - Command-line integration
 - **[SSE Transport](/transports/sse)** - Real-time web applications
-- **[HTTP Transport](/transports/http)** - Traditional web services
+- **[StreamableHTTP Transport](/transports/http)** - Traditional web services
 - **[In-Process Transport](/transports/inprocess)** - Embedded scenarios

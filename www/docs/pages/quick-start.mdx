@@ -170,9 +170,9 @@ func main() {
 }
 ```
 
-### HTTP Client Example
+### StreamableHTTP Client Example
 
-For HTTP-based servers, use the HTTP client:
+For StreamableHTTP-based servers, use the StreamableHTTP client:
 
 ```go
 package main
@@ -187,17 +187,11 @@ import (
 )
 
 func main() {
-    // Create an HTTP client
-    c, _ := client.NewStreamableHttpClient("http://localhost:8080/mcp")
+    // Create a StreamableHTTP client
+    c := client.NewStreamableHttpClient("http://localhost:8080/mcp")
     defer c.Close()
 
     ctx := context.Background()
-
-	// Start initiates the connection to the server
-	if err := c.Start(ctx); err != nil {
-		log.Fatal(err)
-		return
-	}
 
     // Initialize and use the client
     if err := c.Initialize(ctx); err != nil {
@@ -209,7 +203,7 @@ func main() {
         Params: mcp.CallToolRequestParams{
             Name: "hello_world",
             Arguments: map[string]interface{}{
-                "name": "HTTP World",
+                "name": "StreamableHTTP World",
             },
         },
     })
@@ -239,7 +233,7 @@ Now that you have a working MCP server and client:
 
 ### Client Connection Failed
 - Verify the server is running and accessible
-- Check network connectivity for HTTP clients
+- Check network connectivity for StreamableHTTP clients
 - Validate stdio command paths for stdio clients
 
 ### Tool Calls Failing
