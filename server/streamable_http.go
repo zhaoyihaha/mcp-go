@@ -272,6 +272,7 @@ func (s *StreamableHTTPServer) handlePost(w http.ResponseWriter, r *http.Request
 	upgradedHeader := false
 	done := make(chan struct{})
 
+	ctx = context.WithValue(ctx, requestHeader, r.Header)
 	go func() {
 		for {
 			select {
