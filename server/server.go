@@ -348,6 +348,14 @@ func (s *MCPServer) AddResources(resources ...ServerResource) {
 	}
 }
 
+// SetResources replaces all existing resources with the provided list
+func (s *MCPServer) SetResources(resources ...ServerResource) {
+	s.resourcesMu.Lock()
+	s.resources = make(map[string]resourceEntry, len(resources))
+	s.resourcesMu.Unlock()
+	s.AddResources(resources...)
+}
+
 // AddResource registers a new resource and its handler
 func (s *MCPServer) AddResource(
 	resource mcp.Resource,
@@ -391,6 +399,14 @@ func (s *MCPServer) AddResourceTemplates(resourceTemplates ...ServerResourceTemp
 	}
 }
 
+// SetResourceTemplates replaces all existing resource templates with the provided list
+func (s *MCPServer) SetResourceTemplates(templates ...ServerResourceTemplate) {
+	s.resourcesMu.Lock()
+	s.resourceTemplates = make(map[string]resourceTemplateEntry, len(templates))
+	s.resourcesMu.Unlock()
+	s.AddResourceTemplates(templates...)
+}
+
 // AddResourceTemplate registers a new resource template and its handler
 func (s *MCPServer) AddResourceTemplate(
 	template mcp.ResourceTemplate,
@@ -420,6 +436,15 @@ func (s *MCPServer) AddPrompts(prompts ...ServerPrompt) {
 // AddPrompt registers a new prompt handler with the given name
 func (s *MCPServer) AddPrompt(prompt mcp.Prompt, handler PromptHandlerFunc) {
 	s.AddPrompts(ServerPrompt{Prompt: prompt, Handler: handler})
+}
+
+// SetPrompts replaces all existing prompts with the provided list
+func (s *MCPServer) SetPrompts(prompts ...ServerPrompt) {
+	s.promptsMu.Lock()
+	s.prompts = make(map[string]mcp.Prompt, len(prompts))
+	s.promptHandlers = make(map[string]PromptHandlerFunc, len(prompts))
+	s.promptsMu.Unlock()
+	s.AddPrompts(prompts...)
 }
 
 // DeletePrompts removes prompts from the server
