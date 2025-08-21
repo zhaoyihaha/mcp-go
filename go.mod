@@ -1,4 +1,4 @@
-module github.com/mark3labs/mcp-go
+module github.com/zhaoyihaha/mcp-go
 
 go 1.23
 
@@ -6,6 +6,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/json-iterator/go v1.1.12
+	github.com/mark3labs/mcp-go v0.38.0
 	github.com/spf13/cast v1.7.1
 	github.com/stretchr/testify v1.9.0
 	github.com/yosida95/uritemplate/v3 v3.0.2
