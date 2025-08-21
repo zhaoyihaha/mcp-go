@@ -7,14 +7,11 @@ import (
 	"encoding/json"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
-
+	"net/http"
 
 	"github.com/mark3labs/mcp-go/mcp"
 )
--go/mcp"
-)
 
-var JsonUseNumber = json
 var JsonUseNumber = jsoniter.Config{
 	UseNumber: true,
 }.Froze()
