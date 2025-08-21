@@ -6,10 +6,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
+	jsoniter "github.com/json-iterator/go"
+
 
 	"github.com/mark3labs/mcp-go/mcp"
 )
+-go/mcp"
+)
+
+var JsonUseNumber = json
+var JsonUseNumber = jsoniter.Config{
+	UseNumber: true,
+}.Froze()
 
 // HandleMessage processes an incoming JSON-RPC message and returns an appropriate response
 func (s *MCPServer) HandleMessage(
@@ -27,7 +35,7 @@ func (s *MCPServer) HandleMessage(
 		Result  any           `json:"result,omitempty"`
 	}
 
-	if err := json.Unmarshal(message, &baseMessage); err != nil {
+	if err := JsonUseNumber.Unmarshal(message, &baseMessage); err != nil {
 		return createErrorResponse(
 			nil,
 			mcp.PARSE_ERROR,
@@ -46,7 +54,7 @@ func (s *MCPServer) HandleMessage(
 
 	if baseMessage.ID == nil {
 		var notification mcp.JSONRPCNotification
-		if err := json.Unmarshal(message, &notification); err != nil {
+		if err := JsonUseNumber.Unmarshal(message, &notification); err != nil {
 			return createErrorResponse(
 				nil,
 				mcp.PARSE_ERROR,
@@ -84,7 +92,7 @@ func (s *MCPServer) HandleMessage(
 	case mcp.MethodInitialize:
 		var request mcp.InitializeRequest
 		var result *mcp.InitializeResult
-		if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -104,7 +112,7 @@ func (s *MCPServer) HandleMessage(
 	case mcp.MethodPing:
 		var request mcp.PingRequest
 		var result *mcp.EmptyResult
-		if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -130,7 +138,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("logging %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -156,7 +164,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("resources %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -182,7 +190,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("resources %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -208,7 +216,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("resources %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -234,7 +242,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("prompts %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -260,7 +268,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("prompts %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -286,7 +294,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("tools %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
@@ -312,7 +320,7 @@ func (s *MCPServer) HandleMessage(
 				code: mcp.METHOD_NOT_FOUND,
 				err:  fmt.Errorf("tools %w", ErrUnsupported),
 			}
-		} else if unmarshalErr := json.Unmarshal(message, &request); unmarshalErr != nil {
+		} else if unmarshalErr := JsonUseNumber.Unmarshal(message, &request); unmarshalErr != nil {
 			err = &requestError{
 				id:   baseMessage.ID,
 				code: mcp.INVALID_REQUEST,
